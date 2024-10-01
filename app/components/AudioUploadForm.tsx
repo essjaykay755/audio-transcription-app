@@ -29,7 +29,8 @@ export default function AudioUploadForm() {
       } else if (result.error) {
         setError(result.error);
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("Transcription error:", error);
       setError("An error occurred during transcription. Please try again.");
     } finally {
       setIsTranscribing(false);
@@ -62,8 +63,8 @@ export default function AudioUploadForm() {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
       setError("Error accessing microphone. Please check your permissions.");
     }
   };
