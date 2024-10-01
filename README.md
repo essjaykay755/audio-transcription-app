@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎙️ Audio Transcription App
 
-## Getting Started
+Welcome to the Audio Transcription App! This modern web application allows users to easily transcribe audio files using Google's powerful Gemini 1.5 Pro API.
 
-First, run the development server:
+## 🌟 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- 📤 Simple audio file upload
+- 🤖 Transcription powered by Gemini 1.5 Pro API
+- 🎨 Modern and responsive UI
+- ⚡ Fast and efficient processing
+- 🔒 Secure handling of audio data
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- ⚛️ Next.js 13+ (App Router)
+- 🧰 React
+- 📘 TypeScript
+- 🎨 Tailwind CSS
+- 🧠 Google Generative AI (Gemini 1.5 Pro)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+1. Clone the repository:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   git clone https://github.com/yourusername/audio-transcription-app.git
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   cd audio-transcription-app
+   npm install
+   ```
 
-## Deploy on Vercel
+3. Set up your environment variables:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   Create a `.env.local` file in the root directory and add your Gemini API key:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```plaintext
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+4. Run the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action!
+
+## 📝 Usage
+
+1. 📁 Click on the upload area or drag and drop an audio file (MP3, WAV, or M4A).
+2. 🖱️ Click the "Transcribe" button.
+3. ⏳ Wait for the transcription to process.
+4. 📄 View the transcribed text on the page.
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/audio-transcription-app/issues).
+
+## 📜 License
+
+This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+
+## 👨‍💻 Author
+
+**Subhojit Karmakar**
+
+- GitHub: [@essjaykay755](https://github.com/essjaykay755)
+
+## 🙏 Acknowledgements
+
+- Google for providing the Gemini 1.5 Pro API
+- The Next.js team for their excellent framework
+- All contributors and supporters of this project
+
+---
+
+Made with ❤️ and ☕️ by Subhojit Karmakar
