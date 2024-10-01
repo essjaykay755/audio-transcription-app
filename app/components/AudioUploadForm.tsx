@@ -1,90 +1,102 @@
 "use client";
 
-import { useState } from "react";
-import { useFormStatus } from "react-dom";
+import { useState, useRef } from "react";
 import { transcribeAudio } from "../actions/transcribeAudio";
-import { MicrophoneIcon, ArrowUpTrayIcon } from "@heroicons/react/24/solid";
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-full font-semibold text-lg shadow-md hover:from-purple-700 hover:to-indigo-700 transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      {pending ? (
-        <>
-          <svg
-            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          Transcribing...
-        </>
-      ) : (
-        <>
-          <MicrophoneIcon className="w-6 h-6 inline-block mr-2" />
-          Transcribe
-        </>
-      )}
-    </button>
-  );
-}
+import {
+  MicrophoneIcon,
+  ArrowUpTrayIcon,
+  StopIcon,
+} from "@heroicons/react/24/solid";
 
 export default function AudioUploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const handleSubmit = async (formData: FormData) => {
-    const result = await transcribeAudio(formData);
-    if (result.transcript) {
-      setTranscript(result.transcript);
-      setError(null);
-    } else if (result.error) {
-      setError(result.error);
-      setTranscript(null);
+    setError(null);
+    setTranscript(null);
+    setIsTranscribing(true);
+
+    try {
+      const result = await transcribeAudio(formData);
+      if (result.transcript) {
+        setTranscript(result.transcript);
+      } else if (result.error) {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError("An error occurred during transcription. Please try again.");
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
+        const audioFile = new File([audioBlob], "recorded_audio.wav", {
+          type: "audio/wav",
+        });
+        setFile(audioFile);
+
+        const formData = new FormData();
+        formData.append("file", audioFile);
+        handleSubmit(formData);
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      setError("Error accessing microphone. Please check your permissions.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
     }
   };
 
   return (
     <div>
-      <form action={handleSubmit} className="mb-8">
+      <div className="mb-8">
         <div className="mb-6">
           <label
             htmlFor="file-upload"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
             Upload Audio File
           </label>
           <div className="flex items-center justify-center w-full">
             <label
               htmlFor="file-upload"
-              className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+              className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <ArrowUpTrayIcon className="w-10 h-10 mb-3 text-gray-400" />
-                <p className="mb-2 text-sm text-gray-500">
+                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                   <span className="font-semibold">Click to upload</span> or drag
                   and drop
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   MP3, WAV, or M4A (MAX. 10MB)
                 </p>
               </div>
@@ -93,31 +105,70 @@ export default function AudioUploadForm() {
                 name="file"
                 type="file"
                 accept="audio/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const selectedFile = e.target.files?.[0] || null;
+                  setFile(selectedFile);
+                  if (selectedFile) {
+                    const formData = new FormData();
+                    formData.append("file", selectedFile);
+                    handleSubmit(formData);
+                  }
+                }}
                 className="hidden"
               />
             </label>
           </div>
           {file && (
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               Selected file: {file.name}
             </p>
           )}
         </div>
-        <div className="flex justify-center">
-          <SubmitButton />
+        <div className="flex justify-center space-x-4">
+          <button
+            type="button"
+            onClick={isRecording ? stopRecording : startRecording}
+            className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-full font-semibold text-lg shadow-md hover:from-green-600 hover:to-teal-600 transition duration-300 ease-in-out"
+          >
+            {isRecording ? (
+              <>
+                <StopIcon className="w-6 h-6 inline-block mr-2" />
+                Stop Recording
+              </>
+            ) : (
+              <>
+                <MicrophoneIcon className="w-6 h-6 inline-block mr-2" />
+                Start Recording
+              </>
+            )}
+          </button>
         </div>
-      </form>
+      </div>
+
+      {isTranscribing && (
+        <div className="mt-4 text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mr-2"></div>
+          <p className="text-gray-700 dark:text-gray-300">
+            Transcribing your audio... This may take a few moments.
+          </p>
+        </div>
+      )}
+
       {error && (
-        <div className="mt-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
+        <div className="mt-4 p-4 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200">
           <p>{error}</p>
         </div>
       )}
+
       {transcript && (
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Transcription Result:</h2>
-          <div className="bg-gray-100 p-6 rounded-lg">
-            <p className="whitespace-pre-wrap">{transcript}</p>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
+            Transcription Result:
+          </h2>
+          <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg">
+            <p className="whitespace-pre-wrap text-gray-800 dark:text-gray-200">
+              {transcript}
+            </p>
           </div>
         </div>
       )}
