@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { transcribeAudio } from "../actions/transcribeAudio";
 import {
   MicrophoneIcon,
@@ -16,6 +16,15 @@ export default function AudioUploadForm() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -40,6 +49,7 @@ export default function AudioUploadForm() {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
 
@@ -73,6 +83,9 @@ export default function AudioUploadForm() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
     }
   };
 
@@ -98,14 +111,14 @@ export default function AudioUploadForm() {
                   and drop
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  MP3, WAV, or M4A (MAX. 10MB)
+                  WAV or M4A (MAX. 10MB)
                 </p>
               </div>
               <input
                 id="file-upload"
                 name="file"
                 type="file"
-                accept="audio/*"
+                accept="audio/wav,audio/x-m4a"
                 onChange={(e) => {
                   const selectedFile = e.target.files?.[0] || null;
                   setFile(selectedFile);
