@@ -24,7 +24,7 @@ export default function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://github.com/yourusername/voxscribe" 
+                  href="https://github.com/essjaykay755/voxscribe" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition"
@@ -54,7 +54,24 @@ export default function Footer() {
         
         <div className="mt-8 pt-8 border-t border-gray-200/10 dark:border-zinc-800">
           <p className="text-center text-gray-600 dark:text-zinc-400">
-            © {new Date().getFullYear()} VoxScribe. Open source and free to use.
+            © {new Date().getFullYear()} VoxScribe. Built by{' '}
+            <a 
+              href="https://essjaykay.dev" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-gray-900 dark:hover:text-white transition"
+            >
+              EssJayKay.dev
+            </a>
+            {' '}| Open source on{' '}
+            <a 
+              href="https://github.com/essjaykay755/voxscribe"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-gray-900 dark:hover:text-white transition"
+            >
+              GitHub
+            </a>
           </p>
         </div>
       </div>

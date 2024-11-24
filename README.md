@@ -23,7 +23,7 @@ Welcome to the Audio Transcription App! This modern web application allows users
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/audio-transcription-app.git
+   git clone https://github.com/essjaykay755/audio-transcription-app.git
    ```
 
 2. Install dependencies:
@@ -58,7 +58,7 @@ Welcome to the Audio Transcription App! This modern web application allows users
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/audio-transcription-app/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/essjaykay755/audio-transcription-app/issues).
 
 ## 📜 License
 
@@ -69,6 +69,8 @@ This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
 **Subhojit Karmakar**
 
 - GitHub: [@essjaykay755](https://github.com/essjaykay755)
+- Built by [EssJayKay.dev](https://essjaykay.dev)
+- Source code available on [GitHub](https://github.com/essjaykay755/voxscribe)
 
 ## 🙏 Acknowledgements
 

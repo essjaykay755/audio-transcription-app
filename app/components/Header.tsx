@@ -19,7 +19,7 @@ export default function Header() {
 
           <div className="flex items-center space-x-4">
             <a
-              href="https://github.com/yourusername/voxscribe"
+              href="https://github.com/essjaykay755/voxscribe"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
