@@ -1,4 +1,5 @@
-import { XMarkIcon, TrashIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, TrashIcon, ClockIcon, ClipboardIcon, ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 interface Transcription {
   id: string;
@@ -13,6 +14,14 @@ interface Props {
 }
 
 export default function TranscriptionHistory({ history, onRemove, onClearAll }: Props) {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = async (text: string, id: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   if (history.length === 0) return null;
 
   return (
@@ -42,7 +51,18 @@ export default function TranscriptionHistory({ history, onRemove, onClearAll }: 
             key={item.id}
             className="group relative bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6 hover:shadow-md transition-all duration-200"
           >
-            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-2">
+              <button
+                onClick={() => handleCopy(item.text, item.id)}
+                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700"
+                aria-label="Copy transcription"
+              >
+                {copiedId === item.id ? (
+                  <ClipboardDocumentCheckIcon className="h-5 w-5 text-green-500 dark:text-green-400" />
+                ) : (
+                  <ClipboardIcon className="h-5 w-5 text-gray-600 dark:text-zinc-400" />
+                )}
+              </button>
               <button
                 onClick={() => onRemove(item.id)}
                 className="p-1 rounded-full hover:bg-red-50 dark:hover:bg-zinc-700"
@@ -74,4 +94,4 @@ export default function TranscriptionHistory({ history, onRemove, onClearAll }: 
       </div>
     </div>
   );
-} 
+}

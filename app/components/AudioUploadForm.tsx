@@ -7,6 +7,7 @@ import {
   ArrowUpTrayIcon,
   StopIcon,
 } from "@heroicons/react/24/solid";
+import { ClipboardIcon, ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 import TranscriptionHistory from "./TranscriptionHistory";
 import { RainbowButton } from "./ui/rainbow-button";
 
@@ -22,6 +23,7 @@ export default function AudioUploadForm() {
   const [error, setError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -206,11 +208,26 @@ export default function AudioUploadForm() {
       )}
 
       {transcript && (
-        <div className="mt-8 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-200 dark:border-zinc-700">
+        <div className="mt-8 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-200 dark:border-zinc-700 relative">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-zinc-200">
             Latest Transcription
           </h2>
-          <p className="whitespace-pre-wrap text-gray-800 dark:text-zinc-200 leading-relaxed">
+          <button
+            onClick={async () => {
+              await navigator.clipboard.writeText(transcript);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+            className="absolute top-6 right-6 p-2 rounded-lg bg-gray-100/80 dark:bg-zinc-700/80 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-all duration-200 shadow-sm"
+            aria-label="Copy transcription"
+          >
+            {copied ? (
+              <ClipboardDocumentCheckIcon className="h-5 w-5 text-green-500 dark:text-green-400" />
+            ) : (
+              <ClipboardIcon className="h-5 w-5 text-gray-600 dark:text-zinc-300" />
+            )}
+          </button>
+          <p className="whitespace-pre-wrap text-gray-800 dark:text-zinc-200 leading-relaxed pr-12">
             {transcript}
           </p>
         </div>
